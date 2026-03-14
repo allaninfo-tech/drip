@@ -18,12 +18,15 @@ export default async function TrendingPage() {
     getPopularMovies(),
   ]);
 
-  const heroIdx = Math.floor(Math.random() * Math.min(5, trendingTV.results.length));
-  const heroShow = await getMovieDetails(trendingMovies.results[heroIdx].id);
-
   return (
-    <div>
-      <HeroBanner item={heroShow} type="movie" />
+    <div className="browse-page">
+      <div className="section-header" style={{ padding: '40px 48px 0', marginBottom: 0 }}>
+        <h1 className="section-title" style={{ fontSize: '2.4rem' }}>Trending</h1>
+        <p style={{ color: 'var(--text-secondary)', marginTop: 8 }}>
+          Discover the most popular movies and shows this week.
+        </p>
+      </div>
+
       <MediaRow title="🔥 Trending Movies This Week" items={trendingMovies.results} type="movie" seeAllHref="/movies" />
       <MediaRow title="📺 Trending TV This Week" items={trendingTV.results} type="tv" seeAllHref="/tv" />
       <MediaRow title="🎬 Popular Right Now" items={popularMovies.results} type="movie" seeAllHref="/movies" />

@@ -462,18 +462,11 @@ input { font-family: inherit; }
   position: fixed;
   top: 0;
   left: 0;
-  height: 3px;
-  background: linear-gradient(90deg, #a78bfa, #06b6d4, #a78bfa);
-  background-size: 200% 100%;
-  animation: shimmer 2s infinite linear;
+  height: 2.5px;
+  background: var(--accent); /* Single brand color */
   z-index: 9999;
   pointer-events: none;
-  box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
-}
-
-@keyframes shimmer {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
+  box-shadow: 0 0 8px var(--accent);
 }
 .media-card-poster {
   width: 100%;
