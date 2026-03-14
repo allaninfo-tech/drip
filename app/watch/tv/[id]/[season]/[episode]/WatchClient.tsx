@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, AlertCircle, Play, Shield } from 'lucide-react';
 import { embedSources } from '@/lib/constants';
+import FocusKeeper from '@/components/FocusKeeper';
 
 interface WatchClientProps {
   sources: string[];
@@ -17,8 +18,6 @@ interface WatchClientProps {
   backdropPath?: string | null;
   overview?: string;
 }
-
-const SOURCE_NAMES = ['VidLink', 'VidSrc', 'MultiEmbed', '2Embed', 'AutoEmbed'];
 
 export default function WatchClient({
   title,
@@ -45,35 +44,20 @@ export default function WatchClient({
 
   const currentSrc = currentSources[srcIdx];
   const maxEps = episodeCounts[season - 1] ?? 24;
-  const srcName = SOURCE_NAMES[srcIdx] ?? `Source ${srcIdx + 1}`;
+  const srcLabel = `Server ${srcIdx + 1}`;
 
-  const handlePlay = () => {
-    setActivated(true);
-    setLoading(true);
-    setError(false);
-  };
-
-  const changeSource = (i: number) => {
-    setSrcIdx(i);
-    setActivated(false);
-    setLoading(false);
-    setError(false);
-  };
-
+  const handlePlay = () => { setActivated(true); setLoading(true); setError(false); };
+  const changeSource = (i: number) => { setSrcIdx(i); setActivated(false); setLoading(false); setError(false); };
   const changeEpisode = (newSeason: number, newEpisode: number) => {
-    setSeason(newSeason);
-    setEpisode(newEpisode);
-    setSrcIdx(0);
-    setActivated(false);
-    setLoading(false);
-    setError(false);
+    setSeason(newSeason); setEpisode(newEpisode); setSrcIdx(0);
+    setActivated(false); setLoading(false); setError(false);
   };
 
   return (
     <div className="watch-page">
+      <FocusKeeper />
       <div className="watch-player-wrap">
 
-        {/* Click-to-play overlay */}
         {!activated && (
           <div className="watch-cta-overlay">
             <button className="player-big-play" onClick={handlePlay} aria-label="Play">
@@ -82,11 +66,11 @@ export default function WatchClient({
             <p className="watch-cta-caption">
               Click to stream
               {type === 'tv' && ` S${String(season).padStart(2,'0')}E${String(episode).padStart(2,'0')}`}
-              {' '}via <strong>{srcName}</strong>
+              {' '}via <strong>{srcLabel}</strong>
             </p>
             <div className="player-adblock-tip" style={{ marginTop: 12 }}>
               <Shield size={13} />
-              Ad-free experience: use <strong>uBlock Origin</strong> or <strong>Brave</strong>
+              Tip: Use <strong>Brave</strong> or <strong>uBlock Origin</strong> for fewer interruptions
             </div>
           </div>
         )}
@@ -94,17 +78,17 @@ export default function WatchClient({
         {activated && loading && !error && (
           <div className="player-loading" style={{ position: 'absolute', inset: 0, background: '#000', zIndex: 5 }}>
             <div className="player-spinner" />
-            <p className="player-loading-text">Connecting to {srcName}…</p>
+            <p className="player-loading-text">Connecting to {srcLabel}…</p>
           </div>
         )}
 
         {error && (
           <div className="player-loading" style={{ position: 'absolute', inset: 0, background: '#000', zIndex: 5 }}>
             <AlertCircle size={52} color="#ef4444" />
-            <p className="player-loading-text">No stream on {srcName}.</p>
+            <p className="player-loading-text">{srcLabel} is unavailable.</p>
             {srcIdx < currentSources.length - 1 && (
               <button className="btn btn-primary" style={{ marginTop: 12 }} onClick={() => changeSource(srcIdx + 1)}>
-                Try {SOURCE_NAMES[srcIdx + 1] ?? `Source ${srcIdx + 2}`} →
+                Try Server {srcIdx + 2} →
               </button>
             )}
           </div>
@@ -151,10 +135,10 @@ export default function WatchClient({
         )}
 
         <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 24, alignItems: 'center' }}>
-          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>Stream source:</span>
+          <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)', fontWeight: 600 }}>Switch server:</span>
           {currentSources.map((_, i) => (
             <button key={i} className={`source-btn${srcIdx === i ? ' active' : ''}`} onClick={() => changeSource(i)}>
-              {SOURCE_NAMES[i] ?? `Source ${i + 1}`}
+              Server {i + 1}
             </button>
           ))}
         </div>

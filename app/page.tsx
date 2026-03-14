@@ -8,7 +8,7 @@ import {
   getTrendingTV,
   getMovieDetails,
 } from '@/lib/tmdb';
-import HeroBanner from '@/components/HeroBanner';
+import SpotlightHero from '@/components/SpotlightHero';
 import MediaRow from '@/components/MediaRow';
 
 export const revalidate = 3600;
@@ -32,13 +32,15 @@ export default async function HomePage() {
     getTrendingTV(),
   ]);
 
-  // Pick a random hero from trending movies and fetch full details for genres
-  const heroIdx = Math.floor(Math.random() * Math.min(8, trendingMovies.results.length));
-  const heroItem = await getMovieDetails(trendingMovies.results[heroIdx].id);
+  // Fetch full details for the top 5 trending movies (for genres, runtime)
+  const spotlightItems = await Promise.all(
+    trendingMovies.results.slice(0, 5).map((m) => getMovieDetails(m.id))
+  );
 
   return (
     <div>
-      <HeroBanner item={heroItem} type="movie" />
+      {/* Spotlight carousel — top 5 trending movies */}
+      <SpotlightHero items={spotlightItems} type="movie" />
 
       <MediaRow
         title="🔥 Trending Movies"

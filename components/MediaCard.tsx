@@ -14,10 +14,6 @@ interface MediaCardProps {
   priority?: boolean;
 }
 
-function isMovie(m: CardMedia): m is Movie {
-  return 'title' in m && !('name' in m) || ('title' in m && 'release_date' in m);
-}
-
 function getTitle(m: CardMedia): string {
   if ('title' in m && m.title) return m.title;
   if ('name' in m && m.name) return m.name;
@@ -30,18 +26,27 @@ function getDate(m: CardMedia): string {
   return '';
 }
 
+function getRatingColor(rating: number): string {
+  if (rating >= 7.5) return '#22c55e';
+  if (rating >= 5.5) return '#f59e0b';
+  return '#ef4444';
+}
+
 export default function MediaCard({ media, type, priority = false }: MediaCardProps) {
   const router = useRouter();
   const title = getTitle(media);
   const year = formatYear(getDate(media));
-  const rating = formatRating(media.vote_average);
-
-  const handleClick = () => {
-    router.push(`/${type}/${media.id}`);
-  };
+  const rating = media.vote_average;
+  const ratingStr = formatRating(rating);
+  const ratingColor = getRatingColor(rating);
 
   return (
-    <div className="media-card" onClick={handleClick} role="button" aria-label={`Watch ${title}`}>
+    <div
+      className="media-card"
+      onClick={() => router.push(`/${type}/${media.id}`)}
+      role="button"
+      aria-label={`Watch ${title}`}
+    >
       <div style={{ position: 'relative', aspectRatio: '2/3' }}>
         <Image
           src={imgUrl.poster(media.poster_path, 'w342')}
@@ -53,19 +58,24 @@ export default function MediaCard({ media, type, priority = false }: MediaCardPr
           style={{ objectFit: 'cover' }}
           unoptimized
         />
+        {/* Type badge */}
+        <span className="card-type-badge">{type === 'movie' ? 'MOVIE' : 'TV'}</span>
+
+        {/* Hover overlay */}
         <div className="media-card-overlay">
           <div className="media-card-play">
             <Play size={20} fill="#fff" color="#fff" />
           </div>
         </div>
       </div>
+
       <div className="media-card-info">
         <p className="media-card-title">{title}</p>
         <div className="media-card-meta">
-          <span>{year}</span>
-          <span className="media-card-rating">
-            <Star size={11} fill="currentColor" />
-            {rating}
+          <span style={{ color: 'var(--text-muted)', fontSize: '0.7rem' }}>{year}</span>
+          <span className="media-card-rating" style={{ color: ratingColor }}>
+            <Star size={11} fill={ratingColor} />
+            {ratingStr}
           </span>
         </div>
       </div>

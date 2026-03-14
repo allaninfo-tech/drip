@@ -3,20 +3,18 @@
 import { useState } from 'react';
 import { X, AlertCircle, Play, Shield } from 'lucide-react';
 import { embedSources } from '@/lib/constants';
+import FocusKeeper from '@/components/FocusKeeper';
 
 interface VideoPlayerProps {
   mediaId: number;
   type: 'movie' | 'tv';
   title: string;
-  posterPath?: string | null;
   totalSeasons?: number;
   initialSeason?: number;
   initialEpisode?: number;
   episodeCounts?: number[];
   onClose: () => void;
 }
-
-const SOURCE_NAMES = ['VidLink', 'VidSrc', 'MultiEmbed', '2Embed', 'AutoEmbed'];
 
 export default function VideoPlayer({
   mediaId,
@@ -31,7 +29,6 @@ export default function VideoPlayer({
   const [season, setSeason] = useState(initialSeason);
   const [episode, setEpisode] = useState(initialEpisode);
   const [sourceIdx, setSourceIdx] = useState(0);
-  // Key strategy: user must click play before iframe loads — prevents auto-redirect scripts
   const [activated, setActivated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -42,16 +39,14 @@ export default function VideoPlayer({
       : embedSources.tv(mediaId, season, episode);
 
   const currentSrc = sources[sourceIdx];
+  // Abstract label — users don't need to know the provider name
+  const srcLabel = `Server ${sourceIdx + 1}`;
 
-  const handlePlay = () => {
-    setActivated(true);
-    setLoading(true);
-    setError(false);
-  };
+  const handlePlay = () => { setActivated(true); setLoading(true); setError(false); };
 
   const handleSource = (idx: number) => {
     setSourceIdx(idx);
-    setActivated(false); // Reset — user must click play again for new source
+    setActivated(false);
     setLoading(false);
     setError(false);
   };
@@ -72,13 +67,14 @@ export default function VideoPlayer({
   };
 
   const maxEpisodes = episodeCounts[season - 1] ?? 24;
-  const srcName = SOURCE_NAMES[sourceIdx] ?? `Source ${sourceIdx + 1}`;
+  const nextLabel = `Server ${sourceIdx + 2}`;
 
   return (
-    <div className="player-modal-overlay" onClick={(e) => e.target === e.currentTarget && onClose()}>
+    <div className="player-modal-overlay">
+      <FocusKeeper />
       <div className="player-modal">
 
-        {/* ── Header ─────────────────────────────────── */}
+        {/* Header */}
         <div className="player-header">
           <div className="player-title">
             <span>{title}</span>
@@ -87,17 +83,19 @@ export default function VideoPlayer({
                 S{String(season).padStart(2, '0')} E{String(episode).padStart(2, '0')}
               </span>
             )}
-            <span className="player-source-badge">{srcName}</span>
+            <span className="player-source-badge">
+              <Shield size={10} /> {srcLabel}
+            </span>
           </div>
           <button className="player-close" onClick={onClose} aria-label="Close player">
             <X size={18} />
           </button>
         </div>
 
-        {/* ── Player Area ─────────────────────────────── */}
+        {/* Player */}
         <div className="player-iframe-wrap">
 
-          {/* Click-to-play overlay — shown before user activates */}
+          {/* Click-to-play overlay */}
           {!activated && (
             <div className="player-cta-overlay">
               <div className="player-cta-inner">
@@ -106,42 +104,39 @@ export default function VideoPlayer({
                 </button>
                 <p className="player-cta-title">Tap to start streaming</p>
                 <p className="player-cta-hint">
-                  Using <strong>{srcName}</strong> · Switch sources below if it doesn&apos;t load
+                  Using <strong>{srcLabel}</strong> · Switch below if this one doesn&apos;t work
                 </p>
                 <div className="player-adblock-tip">
                   <Shield size={13} />
-                  For best experience, use <strong>uBlock Origin</strong> or <strong>Brave browser</strong>
+                  Tip: Use <strong>Brave browser</strong> or <strong>uBlock Origin</strong> for fewer interruptions
                 </div>
               </div>
             </div>
           )}
 
-          {/* Loading spinner — shown after click while iframe loads */}
+          {/* Loading spinner */}
           {activated && loading && !error && (
             <div className="player-loading">
               <div className="player-spinner" />
-              <p className="player-loading-text">Connecting to {srcName}…</p>
+              <p className="player-loading-text">Connecting to {srcLabel}…</p>
             </div>
           )}
 
-          {/* Error state */}
+          {/* Error */}
           {error && activated && (
             <div className="player-loading">
               <AlertCircle size={48} color="#ef4444" />
-              <p className="player-loading-text">No stream on {srcName}. Try another source below.</p>
+              <p className="player-loading-text">{srcLabel} is unavailable. Try another.</p>
               {sourceIdx < sources.length - 1 && (
-                <button
-                  className="btn btn-primary"
-                  style={{ marginTop: 12 }}
-                  onClick={() => handleSource(sourceIdx + 1)}
-                >
-                  Try {SOURCE_NAMES[sourceIdx + 1] ?? `Source ${sourceIdx + 2}`} →
+                <button className="btn btn-primary" style={{ marginTop: 12 }}
+                  onClick={() => handleSource(sourceIdx + 1)}>
+                  Try {nextLabel} →
                 </button>
               )}
             </div>
           )}
 
-          {/* The actual iframe — only rendered after user clicks Play */}
+          {/* Iframe — only mounted after play clicked */}
           {activated && !error && (
             <iframe
               key={`${currentSrc}-${season}-${episode}`}
@@ -149,25 +144,25 @@ export default function VideoPlayer({
               className="player-iframe"
               allowFullScreen
               allow="fullscreen; autoplay; encrypted-media; picture-in-picture"
+              referrerPolicy="no-referrer"
               onLoad={() => setLoading(false)}
               onError={() => { setLoading(false); setError(true); }}
               title={title}
-              referrerPolicy="no-referrer"
             />
           )}
         </div>
 
-        {/* ── Footer: Sources + Episode Picker ────────── */}
+        {/* Footer */}
         <div className="player-footer">
           <div className="player-source-selector">
-            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Source:</span>
+            <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)', fontWeight: 600 }}>Stream:</span>
             {sources.map((_, i) => (
               <button
                 key={i}
                 className={`source-btn${sourceIdx === i ? ' active' : ''}`}
                 onClick={() => handleSource(i)}
               >
-                {SOURCE_NAMES[i] ?? `#${i + 1}`}
+                Server {i + 1}
               </button>
             ))}
           </div>

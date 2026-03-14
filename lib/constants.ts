@@ -18,19 +18,31 @@ export const vidSrc = {
     `https://vidsrc.to/embed/tv/${tmdbId}/${season}/${episode}`,
 };
 
-// ── Alternate Embed Sources ──────────────────────────────────
+// ── Embed Sources ─────────────────────────────────────────────
+// Labels are intentionally abstract (Server 1, 2…) — users don't need
+// to know the provider name, just that there are multiple options.
+// Added more fallback servers for high availability.
 export const embedSources = {
   movie: (tmdbId: number) => [
     `https://vidlink.pro/movie/${tmdbId}`,
     `https://vidsrc.net/embed/movie?tmdb=${tmdbId}`,
+    `https://vidsrc.me/embed/movie?tmdb=${tmdbId}`,
+    `https://vidsrc.in/embed/movie?tmdb=${tmdbId}`,
+    `https://embed.su/embed/movie/${tmdbId}`,
     `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1`,
+    `https://moviesapi.club/movie/${tmdbId}`,
     `https://www.2embed.cc/embed/${tmdbId}`,
     `https://autoembed.co/movie/tmdb/${tmdbId}`,
+    `https://autoembed.cc/embed/player.php?id=${tmdbId}`,
   ],
   tv: (tmdbId: number, season: number, episode: number) => [
     `https://vidlink.pro/tv/${tmdbId}/${season}/${episode}`,
     `https://vidsrc.net/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`,
+    `https://vidsrc.me/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`,
+    `https://vidsrc.in/embed/tv?tmdb=${tmdbId}&season=${season}&episode=${episode}`,
+    `https://embed.su/embed/tv/${tmdbId}/${season}/${episode}`,
     `https://multiembed.mov/?video_id=${tmdbId}&tmdb=1&s=${season}&e=${episode}`,
+    `https://moviesapi.club/tv/${tmdbId}-${season}-${episode}`,
     `https://www.2embed.cc/embedtv/${tmdbId}&s=${season}&e=${episode}`,
     `https://autoembed.co/tv/tmdb/${tmdbId}-${season}-${episode}`,
   ],
