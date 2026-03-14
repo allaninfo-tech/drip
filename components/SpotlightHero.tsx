@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Play, Info, Star, Clock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { imgUrl, formatYear, formatRating, formatRuntime, GENRE_COLORS } from '@/lib/constants';
+import { useWatchlist } from '@/lib/useLocalStorage';
+import HeartPopButton from '@/components/HeartPopButton';
+import Ripple from '@/components/Ripple';
 import type { Movie, TVShow } from '@/lib/types';
 
 type SpotlightItem = Movie | TVShow;
@@ -24,6 +27,7 @@ export default function SpotlightHero({ items, type }: SpotlightHeroProps) {
   const [active, setActive] = useState(0);
   const [transitioning, setTransitioning] = useState(false);
   const router = useRouter();
+  const { toggleWatchlist, isInWatchlist } = useWatchlist();
 
   const goto = useCallback((idx: number) => {
     if (transitioning) return;
@@ -80,18 +84,6 @@ export default function SpotlightHero({ items, type }: SpotlightHeroProps) {
 
       {/* Content */}
       <div className={`spotlight-content${transitioning ? ' fading' : ''}`}>
-        {/* Index dots */}
-        <div className="spotlight-dots">
-          {items.map((_, i) => (
-            <button
-              key={i}
-              className={`spotlight-dot${i === active ? ' active' : ''}`}
-              onClick={() => goto(i)}
-              aria-label={`Slide ${i + 1}`}
-            />
-          ))}
-        </div>
-
         <div className="spotlight-meta-row">
           <span className="hero-badge"><Star size={11} fill="currentColor" /> Featured</span>
           <span className="spotlight-type-badge">{type === 'movie' ? 'Movie' : 'TV Series'}</span>
@@ -117,12 +109,22 @@ export default function SpotlightHero({ items, type }: SpotlightHeroProps) {
         <p className="hero-overview">{item.overview}</p>
 
         <div className="hero-actions">
-          <button className="btn btn-primary" onClick={() => router.push(watchHref)}>
-            <Play size={18} fill="currentColor" /> Watch Now
-          </button>
-          <button className="btn btn-secondary" onClick={() => router.push(detailHref)}>
-            <Info size={18} /> More Info
-          </button>
+          <Ripple color="rgba(0,0,0,0.2)" className="btn btn-primary" style={{ padding: 0, border: 'none' }}>
+            <button className="btn btn-primary" onClick={() => router.push(watchHref)} style={{ margin: 0 }}>
+              <Play size={18} fill="currentColor" /> Watch Now
+            </button>
+          </Ripple>
+          <Ripple color="rgba(255,255,255,0.2)" className="btn btn-secondary" style={{ padding: 0, border: 'none', background: 'transparent' }}>
+            <button className="btn btn-secondary" onClick={() => router.push(detailHref)} style={{ margin: 0 }}>
+              <Info size={18} /> More Info
+            </button>
+          </Ripple>
+          <div className="btn btn-icon btn-secondary">
+            <HeartPopButton
+              isSaved={isInWatchlist(item.id)}
+              onToggle={(e) => { e.stopPropagation(); toggleWatchlist(item, type); }}
+            />
+          </div>
         </div>
       </div>
 

@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/> <!-- Violet -->
+      <stop offset="100%" stop-color="#06B6D4"/> <!-- Cyan -->
+    </linearGradient>
+    <linearGradient id="dropletGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Outline / Base Shape (Drop/Play hybrid) -->
+  <path d="M256 32 C256 32 128 200 128 320 C128 390.69 185.31 448 256 448 C326.69 448 384 390.69 384 320 C384 200 256 32 256 32 Z" 
+        fill="url(#primaryGradient)" />
+
+  <!-- Play Triangle -->
+  <path d="M225 240 L315 295 L225 350 Z" 
+        fill="#ffffff" 
+        filter="url(#glow)"/>
+
+  <!-- Highlight to make it look like a liquid drop -->
+  <path d="M256 64 C256 64 160 210 160 320 C160 345 168 367 180 385 C150 340 160 240 256 90 Z" 
+        fill="url(#dropletGradient)" />
+</svg>

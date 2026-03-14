@@ -8,8 +8,7 @@ import {
   getTrendingTV,
   getMovieDetails,
 } from '@/lib/tmdb';
-import SpotlightHero from '@/components/SpotlightHero';
-import MediaRow from '@/components/MediaRow';
+import HomeClientWrapper from './HomeClientWrapper';
 
 export const revalidate = 3600;
 
@@ -34,57 +33,20 @@ export default async function HomePage() {
 
   // Fetch full details for the top 5 trending movies (for genres, runtime)
   const spotlightItems = await Promise.all(
-    trendingMovies.results.slice(0, 5).map((m) => getMovieDetails(m.id))
+    trendingMovies.results.slice(0, 5).map((m: any) => getMovieDetails(m.id))
   );
 
   return (
-    <div>
-      {/* Spotlight carousel — top 5 trending movies */}
-      <SpotlightHero items={spotlightItems} type="movie" />
-
-      <MediaRow
-        title="🔥 Trending Movies"
-        items={trendingMovies.results}
-        type="movie"
-        seeAllHref="/movies"
-      />
-      <MediaRow
-        title="🎬 Now Playing"
-        items={nowPlaying.results}
-        type="movie"
-        seeAllHref="/movies"
-      />
-      <MediaRow
-        title="⭐ Top Rated Movies"
-        items={topRatedMovies.results}
-        type="movie"
-        seeAllHref="/movies"
-      />
-      <MediaRow
-        title="📺 Trending TV Shows"
-        items={trendingTV.results}
-        type="tv"
-        seeAllHref="/tv"
-      />
-      <MediaRow
-        title="🌟 Top Rated Series"
-        items={topRatedTV.results}
-        type="tv"
-        seeAllHref="/tv"
-      />
-      <MediaRow
-        title="🎭 Popular Movies"
-        items={popularMovies.results}
-        type="movie"
-        seeAllHref="/movies"
-      />
-      <MediaRow
-        title="📡 Popular TV Shows"
-        items={popularTV.results}
-        type="tv"
-        seeAllHref="/tv"
-      />
-      <div style={{ height: 60 }} />
-    </div>
+    <HomeClientWrapper 
+      spotlightItems={spotlightItems} 
+      trendingMovies={trendingMovies} 
+      nowPlaying={nowPlaying} 
+      topRatedMovies={topRatedMovies} 
+      trendingTV={trendingTV} 
+      topRatedTV={topRatedTV} 
+      popularMovies={popularMovies} 
+      popularTV={popularTV} 
+    />
   );
 }
+

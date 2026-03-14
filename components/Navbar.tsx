@@ -10,6 +10,7 @@ const links = [
   { href: '/movies', label: 'Movies', icon: Film },
   { href: '/tv', label: 'TV Shows', icon: Tv },
   { href: '/trending', label: 'Trending', icon: Flame },
+  { href: '/watchlist', label: 'My List', icon: Flame }, // Reusing an icon for now, ideally Plus or Bookmark
 ];
 
 export default function Navbar() {
@@ -30,7 +31,7 @@ export default function Navbar() {
   return (
     <>
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
-        <Link href="/" className="navbar-logo">drip</Link>
+        <Link href="/" className="navbar-logo">dripTV</Link>
 
         {/* Desktop links */}
         <ul className="navbar-links">
@@ -44,7 +45,11 @@ export default function Navbar() {
         </ul>
 
         <div className="navbar-actions">
-          <button className="navbar-search-btn" onClick={() => router.push('/search')} aria-label="Search">
+          <button 
+            className="navbar-search-btn" 
+            aria-label="Search"
+            onClick={() => router.push('/search')}
+          >
             <Search size={18} />
           </button>
           {/* Mobile hamburger */}

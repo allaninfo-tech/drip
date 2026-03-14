@@ -98,6 +98,12 @@ export async function getTVDetails(id: number): Promise<TVShow> {
   return fetchTMDb<TVShow>(`/tv/${id}`);
 }
 
+export async function getMediaVideos(id: string | number, type: 'movie' | 'tv') {
+  const res = await fetchTMDb<any>(`/${type}/${id}/videos`);
+  // Filter for official YouTube trailers if possible, or just return results
+  return res.results || [];
+}
+
 export async function getTVCredits(id: number): Promise<MediaCredits> {
   return fetchTMDb<MediaCredits>(`/tv/${id}/credits`);
 }

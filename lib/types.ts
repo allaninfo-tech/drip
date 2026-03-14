@@ -36,6 +36,7 @@ export interface TVShow {
   popularity: number;
   seasons?: Season[];
   episode_run_time?: number[];
+  created_by?: { id: number; name: string }[];
 }
 
 export interface Season {
@@ -106,7 +107,7 @@ export type MediaType = 'movie' | 'tv';
 
 export interface SearchResult {
   id: number;
-  media_type: MediaType;
+  media_type: MediaType | 'person';
   title?: string;
   name?: string;
   poster_path: string | null;

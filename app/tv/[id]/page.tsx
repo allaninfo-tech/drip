@@ -1,4 +1,9 @@
-import { getTVDetails, getTVCredits, getSimilarTV } from '@/lib/tmdb';
+import {
+  getTVDetails,
+  getTVCredits,
+  getSimilarTV,
+  getMediaVideos,
+} from '@/lib/tmdb';
 import TVDetailClient from './TVDetailClient';
 import type { Metadata } from 'next';
 import { imgUrl } from '@/lib/constants';
@@ -13,25 +18,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   try {
     const show = await getTVDetails(Number(id));
+    const title = `${show.name} — Watch Free on dripTV`;
     return {
-      title: `${show.name} — Drip`,
+      title: show.name,
       description: show.overview,
       openGraph: {
-        images: show.backdrop_path ? [imgUrl.backdrop(show.backdrop_path)] : [],
+        title,
+        description: show.overview,
+        images: show.backdrop_path ? [imgUrl.backdrop(show.backdrop_path, 'w1280')] : [],
+        type: 'video.tv_show',
       },
+      twitter: {
+        card: 'summary_large_image',
+        title,
+        description: show.overview,
+        images: show.backdrop_path ? [imgUrl.backdrop(show.backdrop_path, 'w780')] : [],
+      }
     };
   } catch {
-    return { title: 'TV Show — Drip' };
+    return { title: 'TV Show' };
   }
 }
 
 export default async function TVShowPage({ params }: Props) {
   const { id } = await params;
-  const [show, credits, similar] = await Promise.all([
+  const [show, credits, similar, videos] = await Promise.all([
     getTVDetails(Number(id)),
     getTVCredits(Number(id)),
     getSimilarTV(Number(id)),
+    getMediaVideos(Number(id), 'tv'),
   ]);
 
-  return <TVDetailClient show={show} credits={credits} similar={similar.results} />;
+  return <TVDetailClient show={show} credits={credits} similar={similar.results} videos={videos} />;
 }

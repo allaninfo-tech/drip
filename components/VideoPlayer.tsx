@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
-import { X, AlertCircle, Play, Shield } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { X, AlertCircle, Play, Shield, ExternalLink } from 'lucide-react';
 import { embedSources } from '@/lib/constants';
 import FocusKeeper from '@/components/FocusKeeper';
+import { useContinueWatching } from '@/lib/useLocalStorage';
 
 interface VideoPlayerProps {
   mediaId: number;
@@ -32,6 +33,22 @@ export default function VideoPlayer({
   const [activated, setActivated] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const { addToHistory, updateProgress } = useContinueWatching();
+
+  // Fake progress tracker since we can't read cross-origin iframe state
+  useEffect(() => {
+    if (!activated) return;
+    let currentProgress = 5; // Start at 5%
+    const interval = setInterval(() => {
+      currentProgress = Math.min(currentProgress + 1, 95); // cap at 95%
+      updateProgress(mediaId, currentProgress);
+    }, 60000); // ++ every 60 seconds
+
+    // Immediately set a base progress so it shows up in UI
+    updateProgress(mediaId, currentProgress);
+
+    return () => clearInterval(interval);
+  }, [activated, mediaId, updateProgress]);
 
   const sources =
     type === 'movie'
@@ -42,7 +59,19 @@ export default function VideoPlayer({
   // Abstract label — users don't need to know the provider name
   const srcLabel = `Server ${sourceIdx + 1}`;
 
-  const handlePlay = () => { setActivated(true); setLoading(true); setError(false); };
+  const handlePlay = () => { 
+    setActivated(true); 
+    setLoading(true); 
+    setError(false);
+    
+    // Save to continue watching history
+    // Minimal mock object since the actual hooks need full Movie/TV object,
+    // but we only have basic props here. Let's pass what we have.
+    addToHistory(
+      { id: mediaId, title, name: title, poster_path: '', backdrop_path: '', vote_average: 0, overview: '' } as any, 
+      type
+    );
+  };
 
   const handleSource = (idx: number) => {
     setSourceIdx(idx);
@@ -166,6 +195,22 @@ export default function VideoPlayer({
               </button>
             ))}
           </div>
+          {/* Download: open current source in new tab */}
+          <a
+            href={currentSrc}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Open stream in new tab to download"
+            style={{
+              display: 'flex', alignItems: 'center', gap: 6,
+              padding: '6px 14px', borderRadius: 8,
+              background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)',
+              color: '#4ade80', fontSize: '0.78rem', fontWeight: 700,
+              textDecoration: 'none', transition: 'all 0.18s', flexShrink: 0,
+            }}
+          >
+            <ExternalLink size={13} /> Download
+          </a>
           {type === 'tv' && (
             <div className="player-episode-picker">
               <select className="ep-select" value={season} onChange={handleSeasonChange}>

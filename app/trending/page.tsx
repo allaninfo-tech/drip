@@ -1,6 +1,12 @@
 import { getTrendingMovies, getTrendingTV, getPopularMovies } from '@/lib/tmdb';
 import MediaRow from '@/components/MediaRow';
 import HeroBanner from '@/components/HeroBanner';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Trending',
+  description: 'See what everyone is watching. The latest trending movies and TV shows on dripTV, all for free.',
+};
 import { getMovieDetails } from '@/lib/tmdb';
 
 export const revalidate = 3600;

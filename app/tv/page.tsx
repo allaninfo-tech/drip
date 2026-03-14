@@ -1,5 +1,11 @@
 import { getPopularTV, getTVGenres } from '@/lib/tmdb';
 import TVClient from './TVClient';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'TV Shows',
+  description: 'Discover trending TV series and binge-worthy shows on dripTV. Watch your favorites for free.',
+};
 
 export const revalidate = 3600;
 

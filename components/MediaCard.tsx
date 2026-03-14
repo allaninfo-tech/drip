@@ -4,6 +4,8 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Star, Play } from 'lucide-react';
 import { imgUrl, formatYear, formatRating } from '@/lib/constants';
+import { useWatchlist, useContinueWatching } from '@/lib/useLocalStorage';
+import HeartPopButton from '@/components/HeartPopButton';
 import type { Movie, TVShow, SearchResult } from '@/lib/types';
 
 type CardMedia = Movie | TVShow | SearchResult;
@@ -34,11 +36,23 @@ function getRatingColor(rating: number): string {
 
 export default function MediaCard({ media, type, priority = false }: MediaCardProps) {
   const router = useRouter();
+  const { toggleWatchlist, isInWatchlist } = useWatchlist();
+  const { history } = useContinueWatching();
+  
   const title = getTitle(media);
   const year = formatYear(getDate(media));
   const rating = media.vote_average;
   const ratingStr = formatRating(rating);
   const ratingColor = getRatingColor(rating);
+  const saved = isInWatchlist(media.id);
+  
+  const historyItem = history.find((m) => m.id === media.id);
+  const progress = historyItem?.progress || 0;
+
+  const handleToggle = (e: React.MouseEvent) => {
+    e.stopPropagation(); // prevent navigation
+    toggleWatchlist(media as Movie | TVShow, type);
+  };
 
   return (
     <div
@@ -66,7 +80,32 @@ export default function MediaCard({ media, type, priority = false }: MediaCardPr
           <div className="media-card-play">
             <Play size={20} fill="#fff" color="#fff" />
           </div>
+          <HeartPopButton 
+            className="media-card-watchlist-btn" 
+            isSaved={saved}
+            onToggle={handleToggle}
+          />
         </div>
+
+        {/* Watch Progress Bar Overlay */}
+        {progress > 0 && (
+          <div style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: '4px',
+            backgroundColor: 'rgba(255, 255, 255, 0.2)',
+            zIndex: 5
+          }}>
+            <div style={{
+              width: `${progress}%`,
+              height: '100%',
+              backgroundColor: 'var(--accent-bright)',
+              borderRadius: '0 2px 2px 0'
+            }} />
+          </div>
+        )}
       </div>
 
       <div className="media-card-info">
