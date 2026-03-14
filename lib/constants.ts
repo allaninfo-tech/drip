@@ -2,7 +2,7 @@
 const IMAGE_BASE = process.env.NEXT_PUBLIC_TMDB_IMAGE_BASE || 'https://image.tmdb.org/t/p';
 
 export const imgUrl = {
-  poster: (path: string | null, size: 'w185' | 'w342' | 'w500' | 'w780' | 'original' = 'w500') =>
+  poster: (path: string | null, size: 'w92' | 'w185' | 'w342' | 'w500' | 'w780' | 'original' = 'w500') =>
     path ? `${IMAGE_BASE}/${size}${path}` : '/placeholder-poster.svg',
   backdrop: (path: string | null, size: 'w780' | 'w1280' | 'original' = 'w1280') =>
     path ? `${IMAGE_BASE}/${size}${path}` : '/placeholder-backdrop.svg',

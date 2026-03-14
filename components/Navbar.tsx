@@ -13,7 +13,11 @@ const links = [
   { href: '/watchlist', label: 'My List', icon: Flame }, // Reusing an icon for now, ideally Plus or Bookmark
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  onSearchClick?: () => void;
+}
+
+export default function Navbar({ onSearchClick }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const pathname = usePathname();
@@ -44,13 +48,13 @@ export default function Navbar() {
           ))}
         </ul>
 
-        <div className="navbar-actions">
+        <div className="nav-actions">
           <button 
-            className="navbar-search-btn" 
+            className="nav-icon-btn" 
             aria-label="Search"
-            onClick={() => router.push('/search')}
+            onClick={onSearchClick}
           >
-            <Search size={18} />
+            <Search size={20} />
           </button>
           {/* Mobile hamburger */}
           <button
