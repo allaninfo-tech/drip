@@ -292,7 +292,7 @@ input { font-family: inherit; }
   gap: 6px;
   background: var(--accent);
   color: #fff;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -301,7 +301,7 @@ input { font-family: inherit; }
   margin-bottom: 16px;
 }
 .hero-title {
-  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
   font-weight: 900;
   line-height: 1.05;
   letter-spacing: -0.02em;
@@ -1193,7 +1193,7 @@ input { font-family: inherit; }
 }
 .spotlight-content {
   position: absolute;
-  bottom: 30px;
+  bottom: 40px;
   left: 48px;
   max-width: 580px;
   transition: opacity 0.3s ease;
