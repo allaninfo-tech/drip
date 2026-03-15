@@ -14,7 +14,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
   return (
     <>
       <Navbar onSearchClick={() => setIsSearchOpen(true)} />
-      <main>{children}</main>
+      <main className="content-container">{children}</main>
       <Footer />
       <SearchModal isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>

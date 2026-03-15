@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import './globals.css';
 import Providers from './Providers';
 import TopProgressBar from '@/components/TopProgressBar';
+import ClientLayout from './ClientLayout';
 import { Suspense } from 'react';
 
 export const metadata: Metadata = {
@@ -52,11 +52,9 @@ export default function RootLayout({
           <Suspense fallback={null}>
             <TopProgressBar />
           </Suspense>
-          <Navbar />
-          <main className="content-container">
+          <ClientLayout>
             {children}
-          </main>
-          <Footer />
+          </ClientLayout>
         </Providers>
       </body>
     </html>
