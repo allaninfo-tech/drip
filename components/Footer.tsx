@@ -7,6 +7,7 @@ export default function Footer() {
       <p className="footer-text">
         © {new Date().getFullYear()} Drip · Built with TMDb &amp; VidSrc
         
+        
       </p>
       <p className="footer-disclaimer">
         Drip does not host or store any media content. All streams are sourced via third-party embed providers. Movie data &amp; images provided by TMDb.
